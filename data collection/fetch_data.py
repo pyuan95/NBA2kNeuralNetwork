@@ -14,7 +14,7 @@ def get_team_urls(teams):
     return team_urls
 
 def team_url_to_name(url):
-    return url.split("/")[-1]
+    return re.sub("-","_",url.split("/")[-1])
 
 def get_player_urls(team):
     # Takes an opened html file as input, which should be from a team's page. Returns a list of player urls for the team
@@ -25,7 +25,7 @@ def get_player_urls(team):
     return player_urls
 
 def player_url_to_name(url):
-    return url.split("/")[-1]
+    return re.sub("-","_",url.split("/")[-1])
 
 def get_player_number(player):
     # Takes an opened html file as input, which should be from a player's page. Returns a dict that maps week number to player rating.
@@ -62,7 +62,7 @@ def get_player_ratings(player):
         ratings[r[0]] = r[1]
     return ratings
 
-def dump_to_json(teams, year):
+def dump_data(teams, year):
     # Takes an opened html file as input, which should be from the page that lists all the teams.
     # returns a dict in the following format:
     #
@@ -85,8 +85,8 @@ def dump_to_json(teams, year):
     team_urls = get_team_urls(teams)
     for team_url in team_urls:
         if team_url == "https://nba2k19.2kratings.com/team/boston-celtics":
-            break
-            # pass
+            # break
+            pass
         try:
             team = download_webpage(team_url)
             team_name = team_url_to_name(team_url)
@@ -96,7 +96,7 @@ def dump_to_json(teams, year):
             for player_url in player_urls:
                 player = download_webpage(player_url)
                 player_name = player_url_to_name(player_url)
-                print("PLAYER: ", player_name)
+                print("\tPLAYER: ", player_name)
                 player_num = get_player_number(player)
                 player_ratings = get_player_ratings(player)
                 data[year][team_name][player_num] = dict()
@@ -109,13 +109,9 @@ def dump_to_json(teams, year):
             print(e)
     return data, data_player_names_only
 
-
-# print(get_player_urls(team))
-# player = download_webpage("https://nba2k19.2kratings.com/player/kyrie-irving")
-# print(get_player_number(player))
 if __name__ == "__main__":
-    teams = download_webpage("https://nba2k19.2kratings.com/current-teams-on-nba-2k19")
-    data, data_player_names_only = dump_to_json(teams, 2019)
+    teams_2019 = download_webpage("https://nba2k19.2kratings.com/current-teams-on-nba-2k19")
+    data, data_player_names_only = dump_data(teams_2019, 2019)
 
     output = open("2k19.p", "wb")
     pickle.dump(data, output, protocol=pickle.HIGHEST_PROTOCOL)
