@@ -13,6 +13,9 @@ def get_team_urls(teams):
     team_urls = [t.a.get("href") for t in team_urls]
     return team_urls
 
+def team_url_to_name(url):
+    return url.split("/")[0]
+
 def get_player_urls(team):
     # Takes an opened html file as input, which should be from a team's page. Returns a list of player urls for the team
 
@@ -20,6 +23,9 @@ def get_player_urls(team):
     player_urls = soup.findAll("td", {"class": "roster-entry"})
     player_urls = [p.a.get("href") for p in player_urls]
     return player_urls
+
+def player_url_to_name(url):
+    return url.split("/")[0]
 
 def get_player_ratings(player):
     # Takes an opened html file as input, which should be from a player's page. Returns a dict that maps week number to player rating.
@@ -40,7 +46,21 @@ def get_player_ratings(player):
         ratings[r[0]] = r[1]
     return ratings
 
+def dump_to_json(teams, year):
+    # Takes an opened html file as input, which should be from the page that lists all the teams.
+    # returns a json file in the following format:
+    #
+    # year
+	#   team
+	# 	    player number
+	# 		    player name
+	# 		    ratings
+    data = dict()
+    data[year] = dict()
+    team_urls = get_team_urls(teams)
+    for team in team_urls:
+        pass
+
 # print(get_player_urls(team))
 
-get_player_ratings(player)
-
+team_url_to_name("https://nba2k19.2kratings.com/team/portland-trail-blazers")
